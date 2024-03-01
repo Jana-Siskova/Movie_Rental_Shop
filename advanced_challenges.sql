@@ -5,10 +5,10 @@ FROM
 	film
 WHERE
 	length > (
-		SELECT
-			AVG(length)
-		FROM 
-			film)
+	SELECT
+		AVG(length)
+	FROM 
+		film)
 
 -- Return all the films that are available in inventory in store 2 more than 3 times.
 SELECT
@@ -17,16 +17,16 @@ FROM
 	film
 WHERE 
 	film_id IN (
-		SELECT 
-			film_id
-		FROM 
-			inventory
-		WHERE 
-			store_id = 2
-		GROUP BY 
-			film_id
-		HAVING 
-			COUNT(*) > 3
+	SELECT 
+		film_id
+	FROM 
+		inventory
+	WHERE 
+		store_id = 2
+	GROUP BY 
+		film_id
+	HAVING 
+		COUNT(*) > 3
 	)
 
 -- Return all customers first and last names that have made payment on '2020-01-25' 
@@ -37,12 +37,12 @@ FROM
 	customer
 WHERE 
 	customer_id IN (
-		SELECT 
-			customer_id
-		FROM 
-			payment
-		WHERE 
-			DATE(payment_date) = '2020-01-25'
+	SELECT 
+		customer_id
+	FROM 
+		payment
+	WHERE 
+		DATE(payment_date) = '2020-01-25'
 	)
 
 -- Return all customers first names and email addresses that have spent more than 30$
@@ -53,14 +53,14 @@ FROM
 	customer
 WHERE 
 	customer_id IN (
-		SELECT 
-			customer_id
-		FROM 
-			payment
-		GROUP BY 
-			customer_id
-		HAVING
-			SUM(amount) > 30
+	SELECT 
+		customer_id
+	FROM 
+		payment
+	GROUP BY 
+		customer_id
+	HAVING
+		SUM(amount) > 30
 	)
 
 -- Return all the customers first and last name that are from California and have spent
@@ -76,14 +76,14 @@ INNER JOIN
 	ON c.address_id = a.address_id
 WHERE 
 	customer_id IN (
-		SELECT 
-			customer_id
-		FROM 
-			payment
-		GROUP BY 
-			customer_id
-		HAVING
-			SUM(amount) > 100
+	SELECT 
+		customer_id
+	FROM 
+		payment
+	GROUP BY 
+		customer_id
+	HAVING
+		SUM(amount) > 100
 	)
 	AND 
 	district = 'California'
@@ -92,25 +92,23 @@ WHERE
 SELECT
 	ROUND(AVG(amount_per_day), 2) AS avg_per_day
 FROM 
-	(
-		SELECT 
-			SUM(amount) AS amount_per_day
-		FROM 
-			payment
-		GROUP BY
-			DATE(payment_date)
+	(SELECT 
+		SUM(amount) AS amount_per_day
+	FROM 
+		payment
+	GROUP BY
+		DATE(payment_date)
 	)
 
 -- Show all the payments together with how much the payment amount is below the maximum
 -- payment amount.
 SELECT
 	*,
-	(
-	SELECT 
+	(SELECT 
 		MAX(amount)
 	FROM 
 		payment
-		) - amount AS difference
+	) - amount AS difference
 FROM 
 	payment
 
@@ -125,13 +123,13 @@ FROM
 	film f1
 WHERE 
 	replacement_cost = (
-		SELECT 
-			MIN(replacement_cost)
-		FROM 
-			film f2
-		WHERE 
-			f1.rating = f2.rating
-		)
+	SELECT 
+		MIN(replacement_cost)
+	FROM 
+		film f2
+	WHERE 
+		f1.rating = f2.rating
+	)
 
 -- Show only those movie titles, their film_id and the length that have the highest length
 -- in each rating category - also show the rating.
@@ -144,34 +142,32 @@ FROM
 	film f1
 WHERE 
 	length = (
-		SELECT 
-			MAX(length)
-		FROM 
-			film f2
-		WHERE 
-			f1.rating = f2.rating
+	SELECT 
+		MAX(length)
+	FROM 
+		film f2
+	WHERE 
+		f1.rating = f2.rating
 	)
 
 -- Show all the payments plus the total amount of every customer as well as the number 
 -- of payments of each customer. 
 SELECT
 	*,
-	(
-		SELECT
-			SUM(amount)
-		FROM 
-			payment p2
-		WHERE 
-			p1.customer_id = p2.customer_id
-			) AS total_amount,
-	(
-		SELECT
-			COUNT(amount)
-		FROM 
-			payment p2
-		WHERE 
-			p1.customer_id = p2.customer_id
-			) AS payment_count
+	(SELECT
+		SUM(amount)
+	FROM 
+		payment p2
+	WHERE 
+		p1.customer_id = p2.customer_id
+	) AS total_amount,
+	(SELECT
+		COUNT(amount)
+	FROM 
+		payment p2
+	WHERE 
+		p1.customer_id = p2.customer_id
+	) AS payment_count
 FROM 
 	payment p1
 	
@@ -181,14 +177,13 @@ SELECT
 	title,
 	film_id,
 	replacement_cost,
-	(
-	SELECT
+	(SELECT
 		AVG(replacement_cost)
 	FROM 
 		film f1
 	WHERE 
 		f1.rating = f2.rating
-		),
+	),
 	rating
 FROM 
 	film f2
